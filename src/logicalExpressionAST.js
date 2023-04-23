@@ -9,6 +9,10 @@ class LiteralNode extends ASTNode {
     super("literal");
     this.value = value;
   }
+
+  evaluate() {
+    return (args) => args[this.value - 1];
+  }
 }
 
 class BinaryOperatorNode extends ASTNode {
@@ -16,6 +20,14 @@ class BinaryOperatorNode extends ASTNode {
     super(type);
     this.left = left;
     this.right = right;
+  }
+
+  evaluate(config) {
+    return (args) =>
+      config[this.type](
+        this.left.evaluate(config)(args),
+        this.right.evaluate(config)(args)
+      );
   }
 }
 
@@ -43,9 +55,6 @@ const parseParentheses = (expression) => {
 
 const parseLiteral = (expression) => {
   const match = expression.match(/^(\d+)(.*)$/);
-  // return match
-  //   ? { node: new LiteralNode(parseInt(match[1])), rest: match[2] }
-  //   : { node: undefined, rest: expression };
   return { node: new LiteralNode(parseInt(match[1])), rest: match[2] };
 };
 
@@ -70,10 +79,7 @@ function parse(expression) {
   if (result.rest.startsWith("OR")) {
     const right = parse(result.rest.slice(2));
     return {
-      node: new OrNode(
-        result.node,
-        right.node //instanceof AndNode ? new AndNode(right.left, right.right) : right
-      ),
+      node: new OrNode(result.node, right.node),
       rest: right.rest,
     };
   }
