@@ -41,8 +41,6 @@ const parseParentheses = (expression) => {
   return { node, rest: rest.slice(1) };
 };
 
-const startWithInteger = (str) => str.match(/^\d/);
-
 const parseLiteral = (expression) => {
   const match = expression.match(/^(\d+)(.*)$/);
   return match
@@ -50,37 +48,36 @@ const parseLiteral = (expression) => {
     : { node: undefined, rest: expression };
 };
 
+const startsWithInteger = (str) => str.match(/^\d/);
+
 function parse(expression) {
-  if (!(expression.startsWith("(") || startWithInteger(expression))) {
+  if (!(expression.startsWith("(") || startsWithInteger(expression))) {
     throw new Error(
-      "Invalid expression: expected literal or opening parenthesis"
-    );
-  }
-  // let node;
-
-  // if (expression.startsWith("(")) {
-  //   const { parenthesesNode, rest } = parseParentheses(expression.slice(1));
-  //   node = parenthesesNode;
-  //   expression = rest;
-  // } else {
-  //   // Expression littérale : analyser un entier
-  const { node, rest } = parseLiteral(expression);
-
-  // }
-
-  if (rest.startsWith("AND")) {
-    return new AndNode(node, parse(rest.slice(3)));
-  }
-
-  if (rest.startsWith("OR")) {
-    const right = parse(rest.slice(2));
-    return new OrNode(
-      node,
-      right
+      "Invalid expression: expected integer or opening parenthesis"
     );
   }
 
-  return node;
+  const result = expression.startsWith("(")
+    ? parseParentheses(expression.slice(1))
+    : parseLiteral(expression);
+
+  if (result.rest.startsWith("AND")) {
+    const right = parse(result.rest.slice(3));
+    return { node: new AndNode(result.node, right.node), rest: right.rest };
+  }
+
+  if (result.rest.startsWith("OR")) {
+    const right = parse(result.rest.slice(2));
+    return {
+      node: new OrNode(
+        result.node,
+        right.node //instanceof AndNode ? new AndNode(right.left, right.right) : right
+      ),
+      rest: right.rest,
+    };
+  }
+
+  return result;
 }
 
 export default class LogicalExpressionAST {
@@ -91,7 +88,12 @@ export default class LogicalExpressionAST {
         "Invalid expression: expected literal or opening parenthesis"
       );
     }
-    // return new LiteralNode(parseInt(expression));
-    return parse(expression);
+    const result = parse(expression);
+    // if (result.rest.length > 0) {
+    //   throw new Error(
+    //     "Invalid expression: unexpected characters at end of string"
+    //   );
+    // }
+    return result.node;
   }
 }
