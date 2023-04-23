@@ -43,9 +43,10 @@ const parseParentheses = (expression) => {
 
 const parseLiteral = (expression) => {
   const match = expression.match(/^(\d+)(.*)$/);
-  return match
-    ? { node: new LiteralNode(parseInt(match[1])), rest: match[2] }
-    : { node: undefined, rest: expression };
+  // return match
+  //   ? { node: new LiteralNode(parseInt(match[1])), rest: match[2] }
+  //   : { node: undefined, rest: expression };
+  return { node: new LiteralNode(parseInt(match[1])), rest: match[2] };
 };
 
 const startsWithInteger = (str) => str.match(/^\d/);
@@ -82,18 +83,12 @@ function parse(expression) {
 
 export default class LogicalExpressionAST {
   static from(expression) {
-    expression = removeAllSpaceCharacters(expression);
-    if (expression.length < 1) {
+    const result = parse(removeAllSpaceCharacters(expression));
+    if (result.rest.length > 0) {
       throw new Error(
-        "Invalid expression: expected literal or opening parenthesis"
+        "Invalid expression: unexpected characters at end of string"
       );
     }
-    const result = parse(expression);
-    // if (result.rest.length > 0) {
-    //   throw new Error(
-    //     "Invalid expression: unexpected characters at end of string"
-    //   );
-    // }
     return result.node;
   }
 }
