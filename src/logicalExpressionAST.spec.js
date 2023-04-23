@@ -1,0 +1,41 @@
+import LogicalExpressionAST from "./logicalExpressionAST";
+
+describe("LogicalExpressionAST", () => {
+  describe("from()", () => {
+    it("throws an error when input is an empty string", () => {
+      expect(() => LogicalExpressionAST.from("")).toThrow(
+        "Invalid expression: expected literal or opening parenthesis"
+      );
+    });
+
+    it("throws an error when input is invalid", () => {
+      expect(() => LogicalExpressionAST.from("xxx")).toThrow(
+        "Invalid expression: expected literal or opening parenthesis"
+      );
+    });
+
+
+    it("parses a simple logic string", () => {
+      expect(LogicalExpressionAST.from("1")).toEqual({
+        type: "literal",
+        value: 1,
+      });
+    });
+
+    it("parses a simple AND logic string", () => {
+      expect(LogicalExpressionAST.from("1 AND 2")).toEqual({
+        type: "AND",
+        left: {
+          type: "literal",
+          value: 1,
+        },
+        right: {
+          type: "literal",
+          value: 2,
+        },
+      });
+    });
+
+
+  });
+});

@@ -190,7 +190,7 @@ class OrNode extends BinaryOperatorNode {
   }
 }
 
-function parseExpression(expression) {
+export function parseExpression(expression) {
   // Supprimer les espaces blancs
   expression = expression.replace(/\s+/g, "");
 
@@ -211,7 +211,7 @@ function parseExpression(expression) {
       const match = expression.match(/^(\d+)(.*)$/);
       if (match) {
         node = new LiteralNode(parseInt(match[1]));
-        expression = match[2];
+        expression = match[2]; //?
       } else {
         throw new Error(
           "Invalid expression: expected literal or opening parenthesis"
@@ -220,18 +220,16 @@ function parseExpression(expression) {
     }
 
     // Rechercher les opérateurs AND à partir de la position actuelle dans la chaîne
-    while (
-      expression[0] === "A" &&
-      expression[1] === "N" &&
-      expression[2] === "D"
+    if (
+      expression.startsWith("AND")
     ) {
       // Expression AND : créer un nouveau nœud de type AndNode et imbriquer les nœuds
       expression = expression.slice(3);
-      node = new AndNode(node, parse());
+      return new AndNode(node, parse());
     }
 
     // Rechercher les opérateurs OR à partir de la position actuelle dans la chaîne
-    if (expression[0] === "O" && expression[1] === "R") {
+    if (expression.startsWith("OR")) {
       // Expression OR : créer un nouveau nœud de type OrNode et imbriquer les nœuds
       expression = expression.slice(2);
       const right = parse();
@@ -246,7 +244,7 @@ function parseExpression(expression) {
 
     return node;
   }
-  // Analyser l'expression à partir du début
+
   const ast = parse();
 
   // Vérifier que toute la chaîne a été analysée
@@ -256,6 +254,7 @@ function parseExpression(expression) {
     );
   }
 
+   // Analyser l'expression à partir du début
   return ast;
 }
 
@@ -271,9 +270,9 @@ function parseExpression(expression) {
 //   };
 // const expression = '((1 OR 3) AND 2) OR ((1 OR 3) AND 4)';
 // const expression = '(1 OR 3) AND 2';
-const expression = "1 OR 3 AND 2";
+// const expression = "1 OR 3 AND 2";
+const expression = "1 OR 2";
 const ast = parseExpression(expression);
-console.log(ast);
 
 // Fonction d'évaluation de l'AST
 function evaluate(ast) {
