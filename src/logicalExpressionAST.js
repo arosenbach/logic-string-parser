@@ -25,6 +25,12 @@ class AndNode extends BinaryOperatorNode {
   }
 }
 
+class OrNode extends BinaryOperatorNode {
+  constructor(left, right) {
+    super("OR", left, right);
+  }
+}
+
 const removeAllSpaceCharacters = (str) => str.replace(/\s+/g, "");
 
 const parseParentheses = (expression) => {
@@ -66,13 +72,13 @@ function parse(expression) {
     return new AndNode(node, parse(rest.slice(3)));
   }
 
-  // if (expression.startsWith("OR")) {
-  //   const right = parse(expression.slice(2));
-  //   return new OrNode(
-  //     node,
-  //     right instanceof AndNode ? new AndNode(right.left, right.right) : right
-  //   );
-  // }
+  if (rest.startsWith("OR")) {
+    const right = parse(rest.slice(2));
+    return new OrNode(
+      node,
+      right
+    );
+  }
 
   return node;
 }

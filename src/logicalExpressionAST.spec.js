@@ -36,6 +36,20 @@ describe("LogicalExpressionAST", () => {
       });
     });
 
+    it("parses a simple OR logic string", () => {
+      expect(LogicalExpressionAST.from("1 OR 2")).toEqual({
+        type: "OR",
+        left: {
+          type: "literal",
+          value: 1,
+        },
+        right: {
+          type: "literal",
+          value: 2,
+        },
+      });
+    });
+
 
   });
 });
