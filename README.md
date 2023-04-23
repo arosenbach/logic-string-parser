@@ -1,4 +1,4 @@
-# logic-string-parser
+# logical-expression-parser
 
 
 Use `LogicalExpressionAST.from()` to convert a logical expression to an Abstract Syntax Tree (a.k.a AST)
