@@ -78,5 +78,31 @@ describe("LogicalExpressionAST", () => {
         },
       });
     });
+
+    it("parses a logic string with nested parentheses", () => {
+      expect(
+        LogicalExpressionAST.from("((1 OR 3) AND 2) OR ((1 OR 3) AND 4)")
+      ).toEqual({
+        type: "OR",
+        left: {
+          type: "AND",
+          left: {
+            type: "OR",
+            left: { type: "literal", value: 1 },
+            right: { type: "literal", value: 3 },
+          },
+          right: { type: "literal", value: 2 },
+        },
+        right: {
+          type: "AND",
+          left: {
+            type: "OR",
+            left: { type: "literal", value: 1 },
+            right: { type: "literal", value: 3 },
+          },
+          right: { type: "literal", value: 4 },
+        },
+      });
+    });
   });
 });
