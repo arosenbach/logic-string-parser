@@ -42,6 +42,7 @@ Limitations:
 
 - `NO` operator is not supported
 - `AND` operator does not have a higher precedence
+- n-ary operators are parsed as a set of binary operators. `OR` and `AND` are always considered binary operators, eg: `1 OR 2 OR 3` won't be parsed as a ternary operator, but as two binary operators: `(1 OR 2) OR 3`
 
 ## evaluate()
 
