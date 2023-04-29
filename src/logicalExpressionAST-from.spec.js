@@ -117,4 +117,14 @@ describe("LogicalExpressionAST", () => {
       });
     });
   });
+
+  it.each([
+    ["1 OR 2 AND 3", "1 OR (2 AND 3)"],
+    ["1 AND 2 OR 3", "(1 AND 2) OR 3"],
+    ["1 AND 2 OR 3 AND 4", "(1 AND 2) OR (3 AND 4)"],
+    ["1 OR 2 AND 3 OR 4", "1 OR ((2 AND 3) OR 4)"],
+    ["1 OR 2 AND 3 AND 4", "(1 OR (2 AND (3 AND 4)))"],
+  ])("applies AND before OR", (a, b) => {
+    expect(LogicalExpressionAST.from(a)).toEqual(LogicalExpressionAST.from(b));
+  });
 });

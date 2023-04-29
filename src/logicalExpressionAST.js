@@ -31,9 +31,27 @@ class BinaryOperatorNode extends ASTNode {
   }
 }
 
+class GroupNode extends BinaryOperatorNode {
+  constructor(node) {
+    super(node.type, node.left, node.right);
+  }
+}
+
 class AndNode extends BinaryOperatorNode {
   constructor(left, right) {
     super("AND", left, right);
+  }
+
+  // Apply a left rotation of an AND-tree when the right child node is a OR-tree
+  //   AND               OR
+  //  /  \              /  \
+  // A   OR     to    AND   C
+  //    /   \        /  \
+  //   B     C      A    B
+  applyPriority() {
+    return this.right instanceof OrNode
+      ? new OrNode(new AndNode(this.left, this.right.left), this.right.right)
+      : this;
   }
 }
 
@@ -50,7 +68,7 @@ const parseParentheses = (expression) => {
   if (!rest.startsWith(")")) {
     throw new Error("Invalid expression: missing closing parenthesis");
   }
-  return { node, rest: rest.slice(1) };
+  return { node: new GroupNode(node), rest: rest.slice(1) };
 };
 
 const parseLiteral = (expression) => {
@@ -73,7 +91,10 @@ function parse(expression) {
 
   if (result.rest.startsWith("AND")) {
     const right = parse(result.rest.slice(3));
-    return { node: new AndNode(result.node, right.node), rest: right.rest };
+    return {
+      node: new AndNode(result.node, right.node).applyPriority(),
+      rest: right.rest,
+    };
   }
 
   if (result.rest.startsWith("OR")) {
