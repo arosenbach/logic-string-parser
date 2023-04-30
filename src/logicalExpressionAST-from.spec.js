@@ -39,12 +39,12 @@ describe("LogicalExpressionAST - from()", () => {
   it("parses multiple OR", () => {
     expect(LogicalExpressionAST.from("1 OR 2 OR 3")).toEqual({
       type: "OR",
-      left: { type: "literal", value: 1 },
-      right: {
-        left: { type: "literal", value: 2 },
-        right: { type: "literal", value: 3 },
+      left: {
         type: "OR",
+        left: { type: "literal", value: 1 },
+        right: { type: "literal", value: 2 },
       },
+      right: { type: "literal", value: 3 },
     });
   });
 

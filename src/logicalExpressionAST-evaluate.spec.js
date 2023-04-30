@@ -17,8 +17,8 @@ describe("LogicalExpressionAST - evaluate()", () => {
     [" 1  AND  2 ", [A, B], WhereClause.and(A, B)],
     [" 1  OR  2 ", [A, B], WhereClause.or(A, B)],
     ["( 1 AND  2) OR 3 ", [A, B, C], WhereClause.or(WhereClause.and(A, B), C)],
-    ["1 AND  2 AND 3 ", [A, B, C], WhereClause.and(A, WhereClause.and(B, C))],
-    ["1 OR  2 OR 3 ", [A, B, C], WhereClause.or(A, WhereClause.or(B, C))],
+    ["1 AND  2 AND 3 ", [A, B, C], WhereClause.and(WhereClause.and(A, B), C)],
+    ["1 OR  2 OR 3 ", [A, B, C], WhereClause.or(WhereClause.or(A, B), C)],
     [
       "((1 OR 3) AND 2) OR ((1 OR 3) AND 4)",
       [A, B, C, D],

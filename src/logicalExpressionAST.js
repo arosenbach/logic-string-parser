@@ -46,18 +46,6 @@ class AndNode extends BinaryOperatorNode {
   constructor(left, right) {
     super("AND", left, right);
   }
-
-  // Apply a left rotation of an AND-tree when the right child node is a OR-tree
-  //   AND               OR
-  //  /  \              /  \
-  // A   OR     to    AND   C
-  //    /   \        /  \
-  //   B     C      A    B
-  applyPriority() {
-    return this.right instanceof OrNode
-      ? new OrNode(new AndNode(this.left, this.right.left), this.right.right)
-      : this;
-  }
 }
 
 class OrNode extends BinaryOperatorNode {
@@ -83,6 +71,41 @@ const parseLiteral = (expression) => {
 
 const startsWithInteger = (str) => str.match(/^\d/);
 
+const newBinaryNodeFromType = (type) => (left, right) => {
+  switch (type) {
+    case "AND":
+      return new AndNode(left, right);
+    case "OR":
+      return new OrNode(left, right);
+    default:
+      throw new Error(`Invalid binary node type: ${type}`);
+  }
+};
+
+// Apply a left rotation of a binary tree, eg:
+//   AND               OR
+//  /  \              /  \
+// A   OR     to    AND   C
+//    /   \        /  \
+//   B     C      A    B
+const rotateLeft = (node) =>
+  newBinaryNodeFromType(node.right.type)(
+    newBinaryNodeFromType(node.type)(node.left, node.right.left),
+    node.right.right
+  );
+
+const rotateLeftIf = (predicate) => (node) =>
+  predicate(node) ? rotateLeft(node) : node;
+
+const righChildHasSameType = (node) => node.type === node.right.type;
+
+const righChildIsTypeOr = (node) => node.right instanceof OrNode;
+
+const or =
+  (...predicates) =>
+  (x) =>
+    predicates.reduce((acc, curr) => acc || curr(x), false);
+
 function parse(expression) {
   if (!(expression.startsWith("(") || startsWithInteger(expression))) {
     throw new Error(
@@ -97,7 +120,9 @@ function parse(expression) {
   if (result.rest.startsWith("AND")) {
     const right = parse(result.rest.slice(3));
     return {
-      node: new AndNode(result.node, right.node).applyPriority(),
+      node: rotateLeftIf(or(righChildHasSameType, righChildIsTypeOr))(
+        new AndNode(result.node, right.node)
+      ),
       rest: right.rest,
     };
   }
@@ -105,7 +130,9 @@ function parse(expression) {
   if (result.rest.startsWith("OR")) {
     const right = parse(result.rest.slice(2));
     return {
-      node: new OrNode(result.node, right.node),
+      node: rotateLeftIf(righChildHasSameType)(
+        new OrNode(result.node, right.node)
+      ),
       rest: right.rest,
     };
   }
