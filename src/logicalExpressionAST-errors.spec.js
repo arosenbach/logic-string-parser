@@ -18,15 +18,4 @@ describe("LogicalExpressionAST - errors", () => {
       );
     });
   });
-
-  describe("evaluate()", () => {
-    it.each([[undefined], [""], [{}], [{ AND: "and" }]])(
-      "throws an error when `config` argument is invalid",
-      (value) => {
-        expect(() =>
-          LogicalExpressionAST.from("1 AND 2").evaluate(value)
-        ).toThrow("Missing configuration. Unable to evaluate 'AND'.");
-      }
-    );
-  });
 });

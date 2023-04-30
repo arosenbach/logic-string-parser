@@ -1,4 +1,4 @@
-export class WhereClause {
+export default class WhereClause {
   constructor(conditions = {}) {
     this.conditions = conditions;
   }

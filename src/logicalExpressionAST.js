@@ -9,10 +9,6 @@ class LiteralNode extends ASTNode {
     super("literal");
     this.value = value;
   }
-
-  evaluate() {
-    return (args) => args[this.value - 1];
-  }
 }
 
 class BinaryOperatorNode extends ASTNode {
@@ -20,19 +16,6 @@ class BinaryOperatorNode extends ASTNode {
     super(type);
     this.left = left;
     this.right = right;
-  }
-
-  evaluate(config) {
-    if (!config || typeof config[this.type] !== "function") {
-      throw new Error(
-        `Missing configuration. Unable to evaluate '${this.type}'.`
-      );
-    }
-    return (args) =>
-      config[this.type](
-        this.left.evaluate(config)(args),
-        this.right.evaluate(config)(args)
-      );
   }
 }
 
