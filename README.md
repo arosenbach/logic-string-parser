@@ -47,7 +47,8 @@ Limitations:
 
 ## evaluate()
 
-The `evaluate()` method takes a config as a parameter. This config specifies how are `AND` and `OR` operators translated.
+The `evaluate()` method takes a config as a parameter.
+This config specifies how are `AND` and `OR` operators translated.
 The `evaluate()` method returns a function that takes an array as paramter.
 The elements of the array are the values that replaces the integers in the logical expression.
 

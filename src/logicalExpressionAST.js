@@ -23,6 +23,11 @@ class BinaryOperatorNode extends ASTNode {
   }
 
   evaluate(config) {
+    if (!config || typeof config[this.type] !== "function") {
+      throw new Error(
+        `Missing configuration. Unable to evaluate '${this.type}'.`
+      );
+    }
     return (args) =>
       config[this.type](
         this.left.evaluate(config)(args),
