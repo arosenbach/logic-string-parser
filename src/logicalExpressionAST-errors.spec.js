@@ -5,7 +5,6 @@ describe("LogicalExpressionAST - errors", () => {
     it.each(["", "xxx", "1 AND ", "(   AND "])(
       "throws an error when input is an empty string",
       (expression) => {
-        expression; //?
         expect(() => LogicalExpressionAST.from(expression)).toThrow(
           "Invalid expression: expected integer or opening parenthesis"
         );

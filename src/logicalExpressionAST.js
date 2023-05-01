@@ -4,6 +4,13 @@ class ASTNode {
   }
 }
 
+class NotNode extends ASTNode {
+  constructor(value) {
+    super("NOT");
+    this.value = value;
+  }
+}
+
 class LiteralNode extends ASTNode {
   constructor(value) {
     super("literal");
@@ -16,12 +23,6 @@ class BinaryOperatorNode extends ASTNode {
     super(type);
     this.left = left;
     this.right = right;
-  }
-}
-
-class GroupNode extends BinaryOperatorNode {
-  constructor(node) {
-    super(node.type, node.left, node.right);
   }
 }
 
@@ -44,7 +45,15 @@ const parseParentheses = (expression) => {
   if (!rest.startsWith(")")) {
     throw new Error("Invalid expression: missing closing parenthesis");
   }
-  return { node: new GroupNode(node), rest: rest.slice(1) };
+  return { node, rest: rest.slice(1) };
+};
+
+const parseNot = (expression) => {
+  const { node, rest } = expression.startsWith("(")
+    ? parseParentheses(expression.slice(1))
+    : parseLiteral(expression);
+
+  return { node: new NotNode(node), rest };
 };
 
 const parseLiteral = (expression) => {
@@ -90,15 +99,26 @@ const or =
     predicates.reduce((acc, curr) => acc || curr(x), false);
 
 function parse(expression) {
-  if (!(expression.startsWith("(") || startsWithInteger(expression))) {
+  if (
+    !(
+      expression.startsWith("(") ||
+      startsWithInteger(expression) ||
+      expression.startsWith("NOT")
+    )
+  ) {
     throw new Error(
       "Invalid expression: expected integer or opening parenthesis"
     );
   }
 
-  const result = expression.startsWith("(")
-    ? parseParentheses(expression.slice(1))
-    : parseLiteral(expression);
+  let result;
+  if (expression.startsWith("(")) {
+    result = parseParentheses(expression.slice(1));
+  } else if (expression.startsWith("NOT")) {
+    result = parseNot(expression.slice(3));
+  } else {
+    result = parseLiteral(expression);
+  }
 
   if (result.rest.startsWith("AND")) {
     const right = parse(result.rest.slice(3));

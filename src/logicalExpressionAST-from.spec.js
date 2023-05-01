@@ -125,4 +125,43 @@ describe("LogicalExpressionAST - from()", () => {
   ])("applies AND before OR", (a, b) => {
     expect(LogicalExpressionAST.from(a)).toEqual(LogicalExpressionAST.from(b));
   });
+
+  it("parses a simple NOT logical expression", () => {
+    expect(LogicalExpressionAST.from("NOT 1")).toEqual({
+      type: "NOT",
+      value: { type: "literal", value: 1 },
+    });
+  });
+
+  it.each([
+    [
+      "NOT (1)",
+      {
+        type: "NOT",
+        value: { type: "literal", value: 1 },
+      },
+    ],
+    [
+      "NOT (1 AND 2)",
+      {
+        type: "NOT",
+        value: {
+          type: "AND",
+          left: {
+            type: "literal",
+            value: 1,
+          },
+          right: {
+            type: "literal",
+            value: 2,
+          },
+        },
+      },
+    ],
+  ])(
+    "parses a NOT logical expression with parentheses",
+    (logicalExpression, expected) => {
+      expect(LogicalExpressionAST.from(logicalExpression)).toEqual(expected);
+    }
+  );
 });

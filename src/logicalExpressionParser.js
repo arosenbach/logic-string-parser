@@ -12,6 +12,10 @@ const evaluate = (config, node) => {
     };
   }
 
+  if (node.type === "NOT") {
+    return (args) => config["NOT"](evaluate(config, node.value)(args));
+  }
+
   if (typeof config[node.type] !== "function") {
     throw new Error(
       `Missing configuration. Unable to evaluate '${node.type}'.`
