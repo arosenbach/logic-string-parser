@@ -63,10 +63,13 @@ describe("LogicalExpressionParser", () => {
     ["1 AND  2 AND 3 ", [A, B]],
     ["1 OR  2 OR 3 ", [A, B]],
     ["((1 OR 3) AND 2) OR ((1 OR 3) AND 4)", [A, B, C]],
-  ])("parses a logical expression", (logicalExpression, clauses) => {
-    const sut = new LogicalExpressionParser(config);
-    expect(() => sut.parse(logicalExpression)(clauses)).toThrow(
-      "Bad number of arguments."
-    );
-  });
+  ])(
+    "throws an error when the number of argument is not correct",
+    (logicalExpression, clauses) => {
+      const sut = new LogicalExpressionParser(config);
+      expect(() => sut.parse(logicalExpression)(clauses)).toThrow(
+        "Bad number of arguments."
+      );
+    }
+  );
 });
