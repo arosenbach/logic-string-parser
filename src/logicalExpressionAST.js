@@ -145,6 +145,9 @@ function parse(expression) {
 
 export default class LogicalExpressionAST {
   static from(expression) {
+    if (typeof expression !== "string") {
+      throw new Error(`Invalid expression: ${JSON.stringify(expression)}`);
+    }
     const result = parse(removeAllSpaceCharacters(expression));
     if (result.rest.length > 0) {
       throw new Error(

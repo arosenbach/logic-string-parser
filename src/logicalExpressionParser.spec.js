@@ -10,7 +10,7 @@ describe("LogicalExpressionParser", () => {
   const config = {
     AND: WhereClause.and,
     OR: WhereClause.or,
-    NOT: (a) => `{not: ${a._toString()}}`,
+    NOT: WhereClause.not,
   };
 
   it.each([
@@ -28,7 +28,7 @@ describe("LogicalExpressionParser", () => {
         WhereClause.and(WhereClause.or(A, C), D)
       ),
     ],
-    ["NOT 1", [A], `{not: { Name: { eq: \"Acme\" } }}`],
+    ["NOT 1", [A], WhereClause.not(A)],
   ])("parses a logical expression", (logicalExpression, clauses, expected) => {
     const sut = new LogicalExpressionParser(config);
     expect(sut.parse(logicalExpression)(clauses)).toEqual(expected);

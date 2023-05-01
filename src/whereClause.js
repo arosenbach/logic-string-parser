@@ -110,6 +110,12 @@ export default class WhereClause {
     });
   }
 
+  static not(clause) {
+    return new WhereClause({
+      not: new NotClause(clause),
+    });
+  }
+
   _toString() {
     return `{ ${Object.values(this.conditions)
       .map((clause) => clause.toString())
@@ -154,5 +160,15 @@ class OrClause {
     return `or: [${this.whereClauses
       .map((whereClause) => whereClause._toString())
       .join(", ")}]`;
+  }
+}
+
+class NotClause {
+  constructor(whereClause) {
+    this.whereClause = whereClause;
+  }
+
+  toString() {
+    return `not: ${this.whereClause._toString()}`;
   }
 }

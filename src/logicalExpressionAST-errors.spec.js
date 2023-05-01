@@ -2,11 +2,11 @@ import LogicalExpressionAST from "./logicalExpressionAST";
 
 describe("LogicalExpressionAST - errors", () => {
   describe("from()", () => {
-    it.each(["", "xxx", "1 AND ", "(   AND "])(
+    it.each([undefined, "", "xxx", "1 AND ", "(   AND "])(
       "throws an error when input is an empty string",
       (expression) => {
         expect(() => LogicalExpressionAST.from(expression)).toThrow(
-          "Invalid expression: expected integer or opening parenthesis"
+          "Invalid expression"
         );
       }
     );
